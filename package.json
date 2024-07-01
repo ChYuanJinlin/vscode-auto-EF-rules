@@ -1,0 +1,154 @@
+{
+  "name": "auto-ef-rules",
+  "displayName": "Auto EF rules",
+  "description": "一键生成element-ui form 表单 rules配置对象",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "publisher": "yuanjinlin",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://github.com/ChYuanJinlin/vscode-auto-EF-rules"
+  },
+  "npm": {
+    "publish": false
+  },
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": [
+      {
+        "title": "auto-EF-rules-config",
+        "properties": {
+          "auto-EF-rules.triggers": {
+            "type": "string",
+            "default": "",
+            "description": "elementUI表单rules表单验证规则trigger配置选项,会应用于全局"
+          },
+          "auto-EF-rules.inputElements": {
+            "type": "object",
+            "default": {
+              "elements": [
+                "el-input",
+                "el-input-number"
+              ],
+              "trigger": "blur"
+            },
+            "description": "包含配置生成rules输入框元素标签"
+          },
+          "auto-EF-rules.selectElements": {
+            "type": "object",
+            "default": {
+              "elements": [
+                "el-cascader",
+                "el-select",
+                "el-radio",
+                "el-checkbox",
+                "checkbox-group",
+                "el-switch",
+                "el-time-select",
+                "el-time-picker",
+                "el-date-picker"
+              ],
+              "trigger": "change"
+            },
+            "description": "包含配置生成rules选择器元素标签"
+          },
+          "auto-EF-rules.uploadElements": {
+            "type": "object",
+            "default": {
+              "elements": [
+                "el-upload"
+              ],
+              "trigger": "change"
+            },
+            "description": "包含配置生成rules上传元素标签"
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "auto-EF-rules.autoEFRules",
+        "title": "auto-EF-rules"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "auto-EF-rules.autoEFRules",
+          "group": "navigation",
+          "title": "auto-EF-rules",
+          "when": "editorTextFocus"
+        }
+      ]
+    }
+  },
+  "author": {
+    "name": "袁金林",
+    "email": "1075360356@qq.com"
+  },
+  "icon": "element.png",
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "commit": "cz",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "js-beautify": "^1.14.3",
+    "prettier": "^3.3.2",
+    "vue": "^2.7.16",
+    "vue-template-compiler": "^2.7.16"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "release-it": {
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md",
+        "ignoreRecommendedBump": true,
+        "strictSemVer": true
+      }
+    },
+    "github": {
+      "release": true,
+      "autoGenerate": true
+    },
+    "git": {
+      "commitMessage": "chore(tag): release v${version}",
+      "commit": true,
+      "tag": true,
+      "push": true
+    }
+  }
+}
