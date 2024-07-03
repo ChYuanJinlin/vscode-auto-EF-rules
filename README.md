@@ -4,7 +4,7 @@
 
 ## 使用方式:
 
-右键点击菜单auto-EF-rules 即可自动生成对应的 `rules`
+右键点击菜单auto-EF-rules 会自动根据`el-form`组件的 `rules`属性的value值自动生成对应的 `rules`对象
 
 ![img](./example.gif)
 

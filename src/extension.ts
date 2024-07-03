@@ -2,11 +2,11 @@
  * @Author: 袁金林 yuanjinlin@guishangyi.cn
  * @Date: 2024-06-26 11:36:45
  * @LastEditors: 袁金林 yuanjinlin@guishangyi.cn
- * @LastEditTime: 2024-06-28 15:32:24
- * @FilePath: \element-rules\src\extension.ts
- * @Description: 
- * 
- * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
+ * @LastEditTime: 2024-07-03 14:53:50
+ * @FilePath: \element-rules\element-rules\src\extension.ts
+ * @Description:
+ *
+ * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
  */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
@@ -43,20 +43,25 @@ export function activate(context: vscode.ExtensionContext) {
           return;
         }
         try {
-          const rules = `\nrules:${await prettier.format(
-            JSON.stringify(getEditorText(content)),
-            {
-              semi: false,
-              parser: "json5",
-            }
-          )},`;
+          let rules = "";
+          async function setRules(item: { key: any; value: any }) {
+            return new Promise(async (resolve) => {
+              rules += `${item.key}:${await prettier.format(JSON.stringify(item.value), { semi: false, parser: "json5" })},`;
+              resolve(rules);
+            });
+          }
 
+          for (const item of getEditorText(content)) {
+            await setRules(item);
+          }
           // 插入代码
           await editor.edit((editBuilder) => {
             editBuilder.insert(position, rules);
           });
           // 通知用户操作已完成
-          vscode.window.showInformationMessage("rules 对象已生成");
+          vscode.window.showInformationMessage(
+            rules ? "rules 对象已生成" : "没有需要生成的rules"
+          );
         } catch (error) {
           console.log("🚀 ~ error:", error);
         }

@@ -2,8 +2,8 @@
  * @Author: 袁金林 yuanjinlin@guishangyi.cn
  * @Date: 2024-06-26 14:32:10
  * @LastEditors: 袁金林 yuanjinlin@guishangyi.cn
- * @LastEditTime: 2024-07-01 11:40:15
- * @FilePath: \element-rules\src\rules.ts
+ * @LastEditTime: 2024-07-02 16:52:25
+ * @FilePath: \element-rules\element-rules\src\rules.ts
  * @Description:
  *
  * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
@@ -21,18 +21,24 @@ interface IRulesConfig {
   select: rulesElement;
   upload: rulesElement;
 }
+interface IElements {
+  attrsMap?: {
+    rules: any;
+    label: string;
+    prop: any;
+    placeholder: string;
+  };
+  tag: any;
+  children: IElements[];
+}
 const triggers = myExtensionConfig.get<string>("triggers");
 const inputElements = myExtensionConfig.get<rulesElement>("inputElements");
 const selectElements = myExtensionConfig.get<rulesElement>("selectElements");
 const uploadElements = myExtensionConfig.get<rulesElement>("uploadElements");
-
-if (triggers) {
-  inputElements!.trigger = inputElements!.trigger || triggers;
-  selectElements!.trigger = selectElements!.trigger || triggers;
-  uploadElements!.trigger = selectElements!.trigger || triggers;
-}
-
+let rules: { key: string; value: any }[] = [];
+let obj: any = {};
 export function getEditorText(tem: string) {
+  rules = [];
   tem = tem.replace(
     /[`${|}`]|v-if="[^"]*"|v-else-if="[^"]*"|v-else="[^"]*"|:/g,
     ""
@@ -48,78 +54,75 @@ export function getEditorText(tem: string) {
       upload: uploadElements,
     };
 
-    const rules: any = {};
-    function genRules(el: { children: any[] }) {
-      el.children.forEach(
-        (element: {
-          attrsMap: { label: string; prop: any };
-          tag: string;
-          children: any;
-        }) => {
-          if (element.attrsMap && element.tag == "el-form-item") {
-            if (element.attrsMap.label && element.attrsMap.prop) {
-              element.attrsMap.label = element.attrsMap.label.replace(
-                /[\s\r\n]/g,
-                ""
-              );
-              createRules(element, element);
-            }
-          } else {
-            if (element.children) {
-              genRules(element);
-            }
-          }
+    function genRules(el: IElements[]) {
+      el.forEach((item: IElements) => {
+        if (item.tag === "el-form" && item.attrsMap?.rules) {
+          obj = {};
+          rules.push({
+            key: item.attrsMap?.rules,
+            value: createRules(item, item),
+          });
         }
-      );
+      });
     }
 
-    function createRules(
-      element: { children: any[] },
-      parent: { attrsMap: { prop: string | number; label: string } }
-    ) {
-      if (element.children) {
-        element.children.forEach((item: { tag: string; children: any[] }) => {
-          if (
-            [
-              ...rulesConfig.input.elements,
-              ...rulesConfig.select.elements,
-              ...rulesConfig.upload.elements,
-            ].includes(item.tag)
-          ) {
-            if (rulesConfig.input.elements.includes(item.tag)) {
-              rules[parent.attrsMap.prop] = [
-                {
-                  required: true,
-                  message: "请输入" + parent.attrsMap.label,
-                  trigger: rulesConfig.input.trigger,
-                },
-              ];
-            } else if (rulesConfig.select.elements.includes(item.tag)) {
-              rules[parent.attrsMap.prop] = [
-                {
-                  required: true,
-                  message: "请选择" + parent.attrsMap.label.trim(),
-                  trigger: rulesConfig.select.trigger,
-                },
-              ];
-            } else if (rulesConfig.upload.elements.includes(item.tag)) {
-              rules[parent.attrsMap.prop] = [
-                {
-                  required: true,
-                  message: "请上传" + parent.attrsMap.label,
-                  trigger: rulesConfig.upload.trigger,
-                },
-              ];
+    genRules(ast.ast.children);
+
+    function createRules(element: IElements, parent: IElements) {
+      element.children?.forEach((item) => {
+        if (
+          item.tag == "el-form-item" &&
+          item.attrsMap?.prop &&
+          !item.attrsMap?.rules
+        ) {
+          item.children.forEach((el) => {
+            if (
+              [
+                ...rulesConfig.input.elements,
+                ...rulesConfig.select.elements,
+                ...rulesConfig.upload.elements,
+              ].includes(el.tag)
+            ) {
+              if (rulesConfig.input.elements.includes(el.tag)) {
+                obj[item.attrsMap?.prop] = [
+                  {
+                    required: true,
+                    message: item.attrsMap?.label
+                      ? "请输入" + item.attrsMap?.label
+                      : el.attrsMap?.placeholder,
+                    trigger: rulesConfig.input.trigger || triggers,
+                  },
+                ];
+              } else if (rulesConfig.select.elements.includes(el.tag)) {
+                obj[item.attrsMap?.prop] = [
+                  {
+                    required: true,
+                    message: item.attrsMap?.label
+                      ? "请选择" + item.attrsMap?.label
+                      : el.attrsMap?.placeholder,
+                    trigger: rulesConfig.select.trigger || triggers,
+                  },
+                ];
+              } else if (rulesConfig.upload.elements.includes(el.tag)) {
+                obj[item.attrsMap?.prop] = [
+                  {
+                    required: true,
+                    message: item.attrsMap?.label
+                      ? "请上传" + item.attrsMap?.label
+                      : el.attrsMap?.placeholder,
+                    trigger: rulesConfig.upload.trigger || triggers,
+                  },
+                ];
+              }
             }
-          } else {
-            createRules(item, parent);
-          }
-        });
-      }
+          });
+        }
+        createRules(item, parent);
+      });
+
+      return obj;
     }
-
-    genRules(ast.ast);
-
-    return rules;
   }
+
+  return rules;
 }

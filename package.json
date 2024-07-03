@@ -1,5 +1,5 @@
 {
-  "name": "auto-ef-rules",
+  "name": "autoefrules",
   "displayName": "Auto EF rules",
   "description": "一键生成element-ui form 表单 rules配置对象",
   "version": "0.0.1",
@@ -16,6 +16,10 @@
   },
   "npm": {
     "publish": false
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/ChYuanJinlin/vscode-auto-EF-rules"
   },
   "activationEvents": [],
   "main": "./dist/extension.js",
@@ -45,11 +49,11 @@
             "default": {
               "elements": [
                 "el-cascader",
+                "el-radio-group",
                 "el-select",
                 "el-radio",
                 "el-checkbox",
-                "checkbox-group",
-                "el-switch",
+                "el-checkbox-group",
                 "el-time-select",
                 "el-time-picker",
                 "el-date-picker"
@@ -108,6 +112,7 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^8.0.1",
     "@types/mocha": "^10.0.6",
     "@types/node": "20.x",
     "@types/vscode": "^1.90.0",
@@ -115,7 +120,9 @@
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
+    "commitizen": "^4.3.0",
     "eslint": "^8.57.0",
+    "release-it": "^17.4.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.5",
     "webpack": "^5.92.0",
