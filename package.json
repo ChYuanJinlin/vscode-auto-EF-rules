@@ -11,8 +11,7 @@
   ],
   "publisher": "yuanjinlin",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://github.com/ChYuanJinlin/vscode-auto-EF-rules"
+    "access": "public"
   },
   "npm": {
     "publish": false
@@ -140,6 +139,7 @@
     }
   },
   "release-it": {
+    
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular",

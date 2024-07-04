@@ -2,7 +2,7 @@
  * @Author: 袁金林 yuanjinlin@guishangyi.cn
  * @Date: 2024-06-26 14:32:10
  * @LastEditors: 袁金林 yuanjinlin@guishangyi.cn
- * @LastEditTime: 2024-07-02 16:52:25
+ * @LastEditTime: 2024-07-04 11:14:45
  * @FilePath: \element-rules\element-rules\src\rules.ts
  * @Description:
  *
@@ -55,6 +55,9 @@ export function getEditorText(tem: string) {
     };
 
     function genRules(el: IElements[]) {
+      if(!el) {
+        return 
+      }
       el.forEach((item: IElements) => {
         if (item.tag === "el-form" && item.attrsMap?.rules) {
           obj = {};
@@ -62,7 +65,9 @@ export function getEditorText(tem: string) {
             key: item.attrsMap?.rules,
             value: createRules(item, item),
           });
+          return;
         }
+        genRules(item.children);
       });
     }
 
