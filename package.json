@@ -2,7 +2,7 @@
   "name": "auto-ef-rules",
   "displayName": "Auto EF rules",
   "description": "一键生成element-ui form 表单 rules配置对象",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.90.0"
   },
